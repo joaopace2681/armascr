@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Requerentes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .main-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-title {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            margin: 20px 0 15px 0;
+            border-left: 4px solid #667eea;
+            font-weight: 600;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px;
+        }
+        .section-title:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        .section-title.collapsed {
+            background: #f1f3f4;
+            border-left-color: #6c757d;
+        }
+        .section-content {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .section-content.collapsed {
+            display: none;
+        }
+        .toggle-icon {
+            transition: transform 0.3s ease;
+            color: #667eea;
+        }
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+            color: #6c757d;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .form-control:disabled {
+            background-color: #f8f9fa;
+            opacity: 0.7;
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .btn-custom:disabled {
+            background: #6c757d;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-outline-custom {
+            border: 2px solid #667eea;
+            color: #667eea;
+            background: transparent;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-custom:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+        }
+        .btn-outline-custom:disabled {
+            border-color: #6c757d;
+            color: #6c757d;
+            transform: none;
+        }
+        .top-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .view-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+        }
+        .btn-toggle {
+            background: #28a745;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        .btn-toggle:hover {
+            background: #218838;
+            color: white;
+        }
+        .btn-toggle.collapsed {
+            background: #6c757d;
+        }
+        .btn-toggle.collapsed:hover {
+            background: #5a6268;
+        }
+        .btn-toggle:disabled {
+            background: #6c757d;
+            opacity: 0.5;
+        }
+        .section-badge {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 10px;
+        }
+        .section-badge.optional {
+            background: #28a745;
+        }
+        .form-disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .status-indicator {
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .status-disabled {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status-enabled {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <div class="header">
+                <div>
+                    <h2 class="mb-0"><i class="fas fa-user-plus me-2"></i>Cadastro de Requerentes</h2>
+                    <p class="mb-0 mt-2 opacity-75">Preencha todos os campos obrigatórios para cadastrar um novo requerente</p>
+                </div>
+                <div>
+                    <a href="{% url 'tela_inicial' %}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left me-1"></i>Voltar
+                    </a>
+                </div>
+            </div>
+            
+            <div class="p-4">
+                <!-- Status do Formulário -->
+                <div class="status-indicator status-disabled" id="formStatus">
+                    <i class="fas fa-lock me-2"></i>Formulário inativo - Clique em "Novo" para habilitar o preenchimento
+                </div>
+                
+                <div class="top-buttons">
+                    <div class="view-controls">
+                        <button type="button" class="btn btn-toggle" id="toggleAll" onclick="toggleAllSections()" disabled>
+                            <i class="fas fa-eye me-1"></i>Ocultar Seções Opcionais
+                        </button>
+                        <button type="button" class="btn btn-outline-custom btn-sm" onclick="expandAllSections()" disabled id="expandBtn">
+                            <i class="fas fa-expand-alt me-1"></i>Expandir Tudo
+                        </button>
+                        <button type="button" class="btn btn-outline-custom btn-sm" onclick="collapseAllSections()" disabled id="collapseBtn">
+                            <i class="fas fa-compress-alt me-1"></i>Recolher Tudo
+                        </button>
+                    </div>
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-outline-custom" onclick="enableForm()" id="newBtn">
+                            <i class="fas fa-plus me-1"></i>Novo
+                        </button>
+                        <button type="button" class="btn btn-outline-custom" disabled id="searchBtn">
+                            <i class="fas fa-search me-1"></i>Pesquisar
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="disableForm()" disabled id="cancelBtn">
+                            <i class="fas fa-times me-1"></i>Cancelar
+                        </button>
+                        <button type="submit" form="requerente-form" class="btn btn-custom" disabled id="saveBtn">
+                            <i class="fas fa-save me-1"></i>Salvar
+                        </button>
+                    </div>
+                </div>
+
+                <form id="requerente-form" method="post" class="form-disabled">
+                    {% csrf_token %}
+                    
+                    <!-- Dados Pessoais -->
+                    <div class="section-title" onclick="toggleSection('dados-pessoais')">
+                        <span><i class="fas fa-user me-2"></i>Dados Pessoais <span class="section-badge">Obrigatório</span></span>
+                        <i class="fas fa-chevron-down toggle-icon" id="icon-dados-pessoais"></i>
+                    </div>
+                    <div class="section-content" id="section-dados-pessoais">
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label required-field">Nome Completo</label>
+                                {{ form.nome_completo }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required-field">Sexo</label>
+                                {{ form.sexo }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required-field">CPF</label>
+                                {{ form.cpf }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required-field">Data de Nascimento</label>
+                                {{ form.data_nascimento }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required-field">País</label>
+                                {{ form.pais }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documentos -->
+                    <div class="section-title" onclick="toggleSection('documentos')">
+                        <span><i class="fas fa-id-card me-2"></i>Documentos <span class="section-badge">Obrigatório</span></span>
+                        <i class="fas fa-chevron-down toggle-icon" id="icon-documentos"></i>
+                    </div>
+                    <div class="section-content" id="section-documentos">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required-field">Identidade</label>
+                                {{ form.identidade }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required-field">Data de Expedição</label>
+                                {{ form.data_expedicao }}
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label required-field">Órgão Emissor</label>
+                                {{ form.orgao_emissor }}
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label required-field">UF</label>
+                                {{ form.uf_identidade }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required-field">Título de Eleitor</label>
+                                {{ form.titulo_eleitor }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profissão -->
+                    <div class="section-title optional-section" onclick="toggleSection('profissao')">
+                        <span><i class="fas fa-briefcase me-2"></i>Profissão <span class="section-badge optional">Opcional</span></span>
+                        <i class="fas fa-chevron-down toggle-icon" id="icon-profissao"></i>
+                    </div>
+                    <div class="section-content" id="section-profissao">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required-field">Profissão</label>
+                                {{ form.profissao }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Outra Profissão</label>
+                                {{ form.outra_profissao }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contato -->
+                    <div class="section-title" onclick="toggleSection('contato')">
+                        <span><i class="fas fa-phone me-2"></i>Contato <span class="section-badge">Obrigatório</span></span>
+                        <i class="fas fa-chevron-down toggle-icon" id="icon-contato"></i>
+                    </div>
+                    <div class="section-content" id="section-contato">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required-field">Telefone Principal</label>
+                                {{ form.telefone1 }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Telefone Secundário</label>
+                                {{ form.telefone2 }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required-field">E-mail</label>
+                                {{ form.email }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filiação -->
+                    <div class="section-title optional-section" onclick="toggleSection('filiacao')">
+                        <span><i class="fas fa-users me-2"></i>Filiação <span class="section-badge optional">Opcional</span></span>
+                        <i class="fas fa-chevron-down toggle-icon" id="icon-filiacao"></i>
+                    </div>
+                    <div class="section-content collapsed" id="section-filiacao">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nome da Mãe</label>
+                                {{ form.nome_mae }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nome do Pai</label>
+                                {{ form.nome_pai }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Endereço Residencial -->
+                    <div class="section-title" onclick="toggleSection('endereco-residencial')">
+                        <span><i class="fas fa-home me-2"></i>Endereço Residencial <span class="section-badge">Obrigatório</span></span>
+                        <i class="fas fa-chevron-down toggle-icon" id="icon-endereco-residencial"></i>
+                    </div>
+                    <div class="section-content" id="section-endereco-residencial">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label required-field">CEP</label>
+                                {{ form.cep_residencial }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label required-field">Endereço</label>
+                                {{ form.endereco_residencial }}
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label required-field">Número</label>
+                                {{ form.numero_residencial }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required-field">Bairro</label>
+                                {{ form.bairro_residencial }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label required-field">Cidade</label>
+                                {{ form.cidade_residencial }}
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label required-field">UF</label>
+                                {{ form.uf_residencial }}
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Complemento</label>
+                                {{ form.complemento_residencial }}
+                            </div>
+                        </div>
+                        
+                        <!-- Coordenadas (Seção Aninhada Opcional) -->
+                        <div class="mt-3">
+                            <div class="section-title optional-section" onclick="toggleSection('coordenadas-residencial')" style="margin: 10px 0; font-size: 0.9rem; padding: 8px 12px;">
+                                <span><i class="fas fa-map-pin me-2"></i>Coordenadas Geográficas <span class="section-badge optional">Opcional</span></span>
+                                <i class="fas fa-chevron-down toggle-icon" id="icon-coordenadas-residencial"></i>
+                            </div>
+                            <div class="section-content collapsed" id="section-coordenadas-residencial">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Latitude</label>
+                                        {{ form.latitude_residencial }}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Longitude</label>
+                                        {{ form.longitude_residencial }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Endereço do Acervo -->
+                    <div class="section-title optional-section" onclick="toggleSection('endereco-acervo')">
+                        <span><i class="fas fa-archive me-2"></i>Endereço do Acervo <span class="section-badge optional">Opcional</span></span>
+                        <i class="fas fa-chevron-down toggle-icon" id="icon-endereco-acervo"></i>
+                    </div>
+                    <div class="section-content collapsed" id="section-endereco-acervo">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">CEP</label>
+                                {{ form.cep_acervo }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Endereço</label>
+                                {{ form.endereco_acervo }}
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Número</label>
+                                {{ form.numero_acervo }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Bairro</label>
+                                {{ form.bairro_acervo }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Cidade</label>
+                                {{ form.cidade_acervo }}
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">UF</label>
+                                {{ form.uf_acervo }}
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">Complemento</label>
+                                {{ form.complemento_acervo }}
+                            </div>
+                        </div>
+                        
+                        <!-- Coordenadas do Acervo (Seção Aninhada Opcional) -->
+                        <div class="mt-3">
+                            <div class="section-title optional-section" onclick="toggleSection('coordenadas-acervo')" style="margin: 10px 0; font-size: 0.9rem; padding: 8px 12px;">
+                                <span><i class="fas fa-map-pin me-2"></i>Coordenadas do Acervo <span class="section-badge optional">Opcional</span></span>
+                                <i class="fas fa-chevron-down toggle-icon" id="icon-coordenadas-acervo"></i>
+                            </div>
+                            <div class="section-content collapsed" id="section-coordenadas-acervo">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Latitude</label>
+                                        {{ form.latitude_acervo }}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Longitude</label>
+                                        {{ form.longitude_acervo }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <small class="text-muted">* Campos obrigatórios</small>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let formEnabled = false;
+        
+        // Adicionar classes Bootstrap aos campos do formulário
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (!input.classList.contains('btn')) {
+                    input.classList.add('form-control');
+                }
+            });
+            
+            // Formatação de data para campos de data
+            const dateInputs = document.querySelectorAll('input[type="date"]');
+            dateInputs.forEach(input => {
+                input.classList.add('form-control');
+            });
+            
+            // Inicializar estado das seções opcionais como recolhidas
+            const optionalSections = document.querySelectorAll('.optional-section');
+            optionalSections.forEach(section => {
+                const sectionId = section.getAttribute('onclick').match(/'([^']+)'/)[1];
+                const icon = document.getElementById('icon-' + sectionId);
+                if (icon) {
+                    section.classList.add('collapsed');
+                    icon.classList.add('collapsed');
+                }
+            });
+            
+            // Desabilitar formulário inicialmente
+            disableFormFields();
+        });
+        
+        // Função para habilitar o formulário
+        function enableForm() {
+            formEnabled = true;
+            const form = document.getElementById('requerente-form');
+            const formStatus = document.getElementById('formStatus');
+            
+            // Remover classe de desabilitado do formulário
+            form.classList.remove('form-disabled');
+            
+            // Habilitar todos os campos
+            enableFormFields();
+            
+            // Atualizar status
+            formStatus.className = 'status-indicator status-enabled';
+            formStatus.innerHTML = '<i class="fas fa-unlock me-2"></i>Formulário ativo - Preencha os campos necessários';
+            
+            // Atualizar botões
+            document.getElementById('newBtn').disabled = true;
+            document.getElementById('searchBtn').disabled = false;
+            document.getElementById('cancelBtn').disabled = false;
+            document.getElementById('saveBtn').disabled = false;
+            document.getElementById('toggleAll').disabled = false;
+            document.getElementById('expandBtn').disabled = false;
+            document.getElementById('collapseBtn').disabled = false;
+            
+            // Focar no primeiro campo
+            const firstInput = form.querySelector('input, select, textarea');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }
+        
+        // Função para desabilitar o formulário
+        function disableForm() {
+            formEnabled = false;
+            const form = document.getElementById('requerente-form');
+            const formStatus = document.getElementById('formStatus');
+            
+            // Adicionar classe de desabilitado ao formulário
+            form.classList.add('form-disabled');
+            
+            // Desabilitar todos os campos
+            disableFormFields();
+            
+            // Limpar formulário
+            form.reset();
+            
+            // Atualizar status
+            formStatus.className = 'status-indicator status-disabled';
+            formStatus.innerHTML = '<i class="fas fa-lock me-2"></i>Formulário inativo - Clique em "Novo" para habilitar o preenchimento';
+            
+            // Atualizar botões
+            document.getElementById('newBtn').disabled = false;
+            document.getElementById('searchBtn').disabled = true;
+            document.getElementById('cancelBtn').disabled = true;
+            document.getElementById('saveBtn').disabled = true;
+            document.getElementById('toggleAll').disabled = true;
+            document.getElementById('expandBtn').disabled = true;
+            document.getElementById('collapseBtn').disabled = true;
+        }
+        
+        // Função para habilitar campos do formulário
+        function enableFormFields() {
+            const inputs = document.querySelectorAll('#requerente-form input, #requerente-form select, #requerente-form textarea');
+            inputs.forEach(input => {
+                if (!input.classList.contains('btn')) {
+                    input.disabled = false;
+                }
+            });
+        }
+        
+        // Função para desabilitar campos do formulário
+        function disableFormFields() {
+            const inputs = document.querySelectorAll('#requerente-form input, #requerente-form select, #requerente-form textarea');
+            inputs.forEach(input => {
+                if (!input.classList.contains('btn')) {
+                    input.disabled = true;
+                }
+            });
+        }
+        
+        // Função para alternar seção individual
+        function toggleSection(sectionId) {
+            if (!formEnabled) return; // Não permitir toggle se formulário estiver desabilitado
+            
+            const section = document.getElementById('section-' + sectionId);
+            const icon = document.getElementById('icon-' + sectionId);
+            const title = icon.closest('.section-title');
+            
+            if (section && icon) {
+                section.classList.toggle('collapsed');
+                icon.classList.toggle('collapsed');
+                title.classList.toggle('collapsed');
+            }
+        }
+        
+        // Função para alternar todas as seções opcionais
+        function toggleAllSections() {
+            if (!formEnabled) return;
+            
+            const toggleBtn = document.getElementById('toggleAll');
+            const optionalSections = document.querySelectorAll('.optional-section');
+            const isCurrentlyHidden = toggleBtn.textContent.includes('Ocultar');
+            
+            optionalSections.forEach(sectionTitle => {
+                const sectionId = sectionTitle.getAttribute('onclick').match(/'([^']+)'/)[1];
+                const section = document.getElementById('section-' + sectionId);
+                const icon = document.getElementById('icon-' + sectionId);
+                
+                if (section && icon) {
+                    if (isCurrentlyHidden) {
+                        // Ocultar seções opcionais
+                        section.classList.add('collapsed');
+                        icon.classList.add('collapsed');
+                        sectionTitle.classList.add('collapsed');
+                    } else {
+                        // Mostrar seções opcionais
+                        section.classList.remove('collapsed');
+                        icon.classList.remove('collapsed');
+                        sectionTitle.classList.remove('collapsed');
+                    }
+                }
+            });
+            
+            // Atualizar texto do botão
+            if (isCurrentlyHidden) {
+                toggleBtn.innerHTML = '<i class="fas fa-eye-slash me-1"></i>Mostrar Seções Opcionais';
+                toggleBtn.classList.add('collapsed');
+            } else {
+                toggleBtn.innerHTML = '<i class="fas fa-eye me-1"></i>Ocultar Seções Opcionais';
+                toggleBtn.classList.remove('collapsed');
+            }
+        }
+        
+        // Função para expandir todas as seções
+        function expandAllSections() {
+            if (!formEnabled) return;
+            
+            const allSections = document.querySelectorAll('.section-content');
+            const allIcons = document.querySelectorAll('.toggle-icon');
+            const allTitles = document.querySelectorAll('.section-title');
+            
+            allSections.forEach(section => section.classList.remove('collapsed'));
+            allIcons.forEach(icon => icon.classList.remove('collapsed'));
+            allTitles.forEach(title => title.classList.remove('collapsed'));
+            
+            // Resetar botão toggle
+            const toggleBtn = document.getElementById('toggleAll');
+            toggleBtn.innerHTML = '<i class="fas fa-eye me-1"></i>Ocultar Seções Opcionais';
+            toggleBtn.classList.remove('collapsed');
+        }
+        
+        // Função para recolher todas as seções
+        function collapseAllSections() {
+            if (!formEnabled) return;
+            
+            const allSections = document.querySelectorAll('.section-content');
+            const allIcons = document.querySelectorAll('.toggle-icon');
+            const allTitles = document.querySelectorAll('.section-title');
+            
+            allSections.forEach(section => section.classList.add('collapsed'));
+            allIcons.forEach(icon => icon.classList.add('collapsed'));
+            allTitles.forEach(title => title.classList.add('collapsed'));
+            
+            // Atualizar botão toggle
+            const toggleBtn = document.getElementById('toggleAll');
+            toggleBtn.innerHTML = '<i class="fas fa-eye-slash me-1"></i>Mostrar Seções Opcionais';
+            toggleBtn.classList.add('collapsed');
+        }
+    </script>
+</body>
+</html>

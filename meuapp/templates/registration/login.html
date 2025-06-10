@@ -3,140 +3,175 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Acesso ao Sistema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema ARMASCR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            background: linear-gradient(135deg, #009739 0%, #ffcc29 50%, #3e4095 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
         }
+        
         .login-container {
-            background: rgba(255,255,255,0.97);
-            border-radius: 18px;
-            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18);
-            padding: 64px 36px 36px 36px;
-            max-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 3rem 2.5rem;
+            max-width: 450px;
             width: 100%;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin: 2rem;
         }
-        .bandeira {
-            position: absolute;
-            top: 18px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 88px;
-            height: 88px;
-            background: #009739;
-            border-radius: 50%;
-            border: 7px solid #ffcc29;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 16px #3e4095;
+        
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
         }
-        .bandeira span {
-            color: #fff;
+        
+        .logo-section h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             font-size: 2.5rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
-        .login-title {
-            font-weight: 800;
-            font-size: 2rem;
-            color: #009739;
-            letter-spacing: 1px;
-            margin-bottom: 28px;
-            text-align: center;
-            text-shadow: 0 2px 8px #ffcc29;
-            margin-top: 120px;
-        }
-        form {
-            width: 100%;
-        }
-        .form-group {
-            margin-bottom: 22px;
-            position: relative;
-        }
-        .form-label {
-            color: #3e4095;
-            font-weight: 600;
-            margin-bottom: 6px;
-            display: block;
-        }
-        .form-control, .modern-input {
-            border: none;
-            border-bottom: 2px solid #009739;
-            border-radius: 0;
-            background: transparent;
-            font-size: 1.1rem;
-            width: 100%;
-            padding: 10px 0 8px 0;
-            outline: none;
-            transition: border-color 0.3s, background 0.3s;
-            box-shadow: none;
-        }
-        .form-control:focus, .modern-input:focus {
-            border-bottom: 2.5px solid #3e4095;
-            background: #f4f8fa;
-        }
-        .btn-primary {
-            background: linear-gradient(90deg, #009739 60%, #ffcc29 100%);
-            border: none;
-            color: #fff;
             font-weight: 700;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px #3e4095;
-            transition: background 0.3s;
-            width: 100%;
-            padding: 12px 0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo-section p {
+            color: #6c757d;
             font-size: 1.1rem;
+            margin-bottom: 0;
         }
-        .btn-primary:hover {
-            background: linear-gradient(90deg, #ffcc29 0%, #009739 100%);
-            color: #3e4095;
+        
+        .form-floating {
+            margin-bottom: 1.5rem;
         }
-        .signup-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #3e4095;
+        
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background-color: white;
+        }
+        
+        .form-floating > label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
             font-weight: 600;
-            text-decoration: none;
-            transition: color 0.2s;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+            margin-bottom: 1.5rem;
         }
-        .signup-link:hover {
-            color: #009739;
-            text-decoration: underline;
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .signup-link {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .signup-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .signup-link a:hover {
+            color: #764ba2;
+        }
+        
+        .alert {
+            border-radius: 12px;
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        @media (max-width: 576px) {
+            .login-container {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+            
+            .logo-section h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <div class="bandeira"><span>BR</span></div>
-        <h2 class="login-title">Acesso ao Sistema</h2>
-        <form method="post" novalidate>
+        <div class="logo-section">
+            <h1><i class="fas fa-shield-alt"></i> ARMASCR</h1>
+            <p>Sistema de Gestão</p>
+        </div>
+        
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Verifique os dados informados
+            </div>
+        {% endif %}
+        
+        <form method="post">
             {% csrf_token %}
-            {% for field in form.visible_fields %}
-                <div class="form-group">
-                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field|add_class:"form-control modern-input" }}
-                    {% if field.errors %}
-                        <div class="text-danger small">{{ field.errors|striptags }}</div>
-                    {% endif %}
-                </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-primary mt-2">Entrar</button>
+            
+            <div class="form-floating">
+                {{ form.username|add_class:'form-control' }}
+                <label for="{{ form.username.id_for_label }}">
+                    <i class="fas fa-user me-2"></i>Usuário
+                </label>
+            </div>
+            
+            <div class="form-floating">
+                {{ form.password|add_class:'form-control' }}
+                <label for="{{ form.password.id_for_label }}">
+                    <i class="fas fa-lock me-2"></i>Senha
+                </label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-login">
+                <i class="fas fa-sign-in-alt me-2"></i>Entrar
+            </button>
         </form>
-        <a href="{% url 'signup' %}" class="signup-link">Não tem cadastro? Cadastre-se</a>
+        
+        <div class="signup-link">
+            <p>Não tem uma conta? <a href="{% url 'signup' %}">Cadastre-se aqui</a></p>
+        </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
