@@ -517,7 +517,7 @@
     <script>
         // URLs dos sites das justiças
         const urlsJustica = {
-            'federal': 'https://web.trf3.jus.br/certidao-regional/',
+            'federal': 'https://web.trf3.jus.br/certidao-regional/CertidaoCivelEleitoralCriminal/SolicitarDadosCertidao',
             'estadual': 'https://esaj.tjsp.jus.br/sco/abrirCadastro.do',
             'militar': 'https://www.stm.jus.br/servicos-stm/certidao-negativa/emitir-certidao-negativa',
             'eleitoral': 'https://www.tse.jus.br/servicos-eleitorais/autoatendimento-eleitoral#/certidoes-eleitor'
@@ -544,7 +544,15 @@
         function gerarCertidaoRequerente(requerenteId, tipo) {
             document.getElementById('loading').style.display = 'block';
             
-            fetch(`/gerar-certidao/${requerenteId}/${tipo}/`, {
+            let url;
+            if (tipo === 'federal') {
+                url = `/gerar-certidao-federal/${requerenteId}/`;
+            } else {
+                // Para outros tipos, manter a URL genérica
+                url = `/gerar-certidao/${requerenteId}/${tipo}/`;
+            }
+            
+            fetch(url, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
@@ -627,3 +635,47 @@
     </script>
 </body>
 </html>
+
+function gerarCertidaoJusticaFederal(requerenteId) {
+    // Mostrar loading
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
+    btn.disabled = true;
+    
+    fetch(`/gerar-certidao-justica-federal/${requerenteId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Mostrar sucesso
+            showAlert('success', data.message);
+            
+            // Fazer download automático
+            if (data.url_download) {
+                const link = document.createElement('a');
+                link.href = data.url_download;
+                link.download = data.nome_arquivo;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        } else {
+            showAlert('error', data.message);
+        }
+    })
+    .catch(error => {
+        showAlert('error', 'Erro na comunicação com o servidor');
+        console.error('Erro:', error);
+    })
+    .finally(() => {
+        // Restaurar botão
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
